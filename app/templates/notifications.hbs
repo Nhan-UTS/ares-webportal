@@ -34,8 +34,6 @@
       {{#link-to 'scenes-play'}}View{{/link-to}}
     {{else if (eq notification.type 'event')}}
       {{#link-to 'event' notification.reference_id}}View{{/link-to}}
-    {{else if (eq notification.type 'achievement')}}
-      {{#link-to 'char' currentUser.id}}View{{/link-to}}
     {{/if}}
   </td>
 </tr>

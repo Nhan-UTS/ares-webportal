@@ -9,14 +9,12 @@ export default Controller.extend({
     title: '',
     summary: '',
     description: '',
-    contentWarning: '',
     storyteller: null,
     
     resetOnExit: function() {
         this.set('title', '');
         this.set('summary', '');
         this.set('description', '');
-        this.set('contentWarning', '');
         this.set('storyteller', null);
     },
     
@@ -30,7 +28,7 @@ export default Controller.extend({
             api.requestOne('createPlot', { 
                title: this.title, 
                summary: this.summary,
-               content_warning: this.get('contentWarning'),
+               content_warning: this.get('model.plot.content_warning'),
                storyteller_id: this.get('storyteller.id'),
                description: this.description}, null)
             .then( (response) => {
