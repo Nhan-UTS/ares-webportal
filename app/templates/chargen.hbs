@@ -76,6 +76,9 @@
                          {{else if (eq key 'age')}}
                              {{input type="text" size=25 value=demo.value}}
                              <div class="cg-tip">Enter an age or a birthdate in {{model.cgInfo.date_format}} format.</div>
+			 {{else if (eq key 'character secret')}}
+			     {{input type="text" size=25 value=demo.value}}
+			     <div class="cg-tip">You can set your own secret or once in game request that staff give you one. You can also leave this blank.</div>
                          {{else}}
                              {{input type="text" size=25 value=demo.value}}
                          {{/if}}

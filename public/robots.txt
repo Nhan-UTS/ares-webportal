@@ -1,3 +1,5 @@
 # http://www.robotstxt.org
 User-agent: *
 Disallow:
+
+Sitemap: 134.209.175.128/game/sitemap.xml
