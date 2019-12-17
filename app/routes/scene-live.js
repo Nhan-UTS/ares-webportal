@@ -1,3 +1,4 @@
+import $ from "jquery"
 import EmberObject from '@ember/object';
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
@@ -30,7 +31,16 @@ export default Route.extend(ReloadableRoute, RouteResetOnExit, {
              abilities:  api.request('charAbilities', { id: this.get('session.data.authenticated.id') }),
              locations: api.request('sceneLocations', { id: params['id'] })
            })
-           .then((model) => EmberObject.create(model));
+           .then((model) =>  {
+             
+             if (model.scene.shared) {
+               this.transitionTo('scene', params['id']);             
+             }
+             else
+             {
+               return EmberObject.create(model);
+             }
+         });
     },
     
     setupController: function(controller, model) {

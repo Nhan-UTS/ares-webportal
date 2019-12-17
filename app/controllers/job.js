@@ -1,25 +1,65 @@
 import Controller from '@ember/controller';
+import { observer } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default Controller.extend({
   reply: '',
   replyAdminOnly: true,
   editParticipants: false,
-  newParticipants: [],
+  newParticipants: null,
+  newActivity: false,
     
   gameApi: service(),
+  gameSocket: service(),
   session: service(),
   flashMessages: service(),
-  
-    
-  setup: function() {
-    this.set('reply', '');
+
+  init: function() {
+    this._super(...arguments);
+    this.set('newParticipants', []);
+  },
+      
+  resetReplyAdmin: function() {
     this.set('replyAdminOnly', this.get('model.job.is_category_admin') ? true : false );
+  },
+  
+  setup: observer('model', function() {
+    this.set('reply', '');
+    this.set('newActivity', false);
+    this.resetReplyAdmin();
     this.set('editParticipants', false);
     this.set('newParticipants', this.get('model.job.participants'));
-  }.observes('model'),
+  }),
     
-
+  setupCallback: function() {
+      let self = this;
+      this.gameSocket.setupCallback('job_update', function(type, msg, timestamp) {
+          self.onJobsMessage(type, msg, timestamp) } );
+  },
+  
+  onJobsMessage: function(type, msg, timestamp ) {
+    let splitMsg = msg.split('|');
+    let jobId = splitMsg[0]; // Message = splitMsg[1]
+    let data = splitMsg[2];
+    
+    if (data) {
+      data = JSON.parse(data);
+    }
+    if (jobId == this.get('model.job.id')) {
+      if (data && data.type == 'job_reply') {
+        this.get('model.job.replies').pushObject( {
+          admin_only: data.admin_only,
+          author: data.author,
+          created: timestamp,
+          id: data.reply_id,
+          message: data.message
+        });
+      } else {
+        this.set('newActivity', true);  
+      }      
+    }
+  },
+  
   actions: {
     addReply() {
       let api = this.gameApi;
@@ -31,8 +71,7 @@ export default Controller.extend({
           return;
         }
         this.set('reply', '');
-        this.set('replyAdminOnly', true);
-        this.send('reloadModel');
+        this.resetReplyAdmin();
         this.flashMessages.success('Reply added!');
       });
     },
@@ -44,7 +83,7 @@ export default Controller.extend({
           return;
         }
         this.set('reply', '');
-        this.set('replyAdminOnly', true);
+        this.resetReplyAdmin();
         this.transitionToRoute('jobs');
         this.flashMessages.success('Reply added!');
       });
@@ -81,6 +120,7 @@ export default Controller.extend({
         this.flashMessages.success('Job changed to ' + data + '.');
       });
     },
+    
     participantsChanged: function(newParticipants) {
         this.set('newParticipants', newParticipants);
     },

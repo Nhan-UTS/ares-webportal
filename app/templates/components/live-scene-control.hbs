@@ -320,8 +320,8 @@
       fade=false
       open=characterCard
       onHide=(action (mut characterCard) null)}}
-
-      {{#if scene.use_custom_char_chards}}
+      
+      {{#if scene.use_custom_char_cards}}
         {{char-card-custom char=characterCardInfo}}
       {{else}}
         {{char-card char=characterCardInfo}}

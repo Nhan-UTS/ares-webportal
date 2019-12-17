@@ -1,3 +1,4 @@
+import $ from "jquery"
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
 
@@ -10,9 +11,14 @@ export default Service.extend({
     windowVisible: true,
     socket: null,
     charId: null,
-    callbacks: {},
+    callbacks: null,
     connected: false,
-    
+
+    init: function() {
+      this._super(...arguments);
+      this.set('callbacks', {});
+    },
+      
     socketUrl() {
       var protocol = aresconfig.use_https ? 'wss' : 'ws';
       return `${protocol}://${aresconfig.host}:${aresconfig.websocket_port}/websocket`;
@@ -199,6 +205,7 @@ export default Service.extend({
             }
             
             if (notification_type == "job_update" ||
+                notification_type == "new_forum_activity" ||
                 notification_type == "new_chat" || 
                 notification_type == "new_page" ||
                 notification_type == "new_scene_activity" ||
